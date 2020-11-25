@@ -68,8 +68,10 @@ func OneCall(address string, action byte, param interface{}) (resp []byte) {
 }
 
 func main() {
-	resp := OneCall("localhost:8080", 1, ActionParam1{3, 6})
-	fmt.Println("返回值：", string(resp))
+	for i := 0; i < 50; i++ {
+		resp := OneCall("localhost:8080", 1, ActionParam1{3, 6})
+		fmt.Println("返回值：", string(resp))
+	}
 }
 
 type ActionParam1 struct {
