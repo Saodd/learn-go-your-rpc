@@ -24,8 +24,8 @@ func main() {
 func serve(conn net.Conn) {
 	logger.Println("连接：", conn.RemoteAddr())
 	defer conn.Close()
-	r := make([]byte, 256)
-	w := make([]byte, 0, 256)
+	r := make([]byte, 255)
+	w := make([]byte, 0, 255)
 	for {
 		// 解析请求体
 		// 第1位：消息总长度。第2位：动作。第3~位：参数json
@@ -40,7 +40,7 @@ func serve(conn net.Conn) {
 		}
 		// 执行服务端任务函数
 		var js []byte
-		js, err := process(action, r[:n])
+		js, err := route(action, r[:n])
 		if err != nil {
 			logger.Println(err)
 			return
@@ -56,7 +56,7 @@ func serve(conn net.Conn) {
 	}
 }
 
-func process(action byte, req []byte) ([]byte, error) {
+func route(action byte, req []byte) ([]byte, error) {
 	switch action {
 	case 1:
 		return processAction1(req)

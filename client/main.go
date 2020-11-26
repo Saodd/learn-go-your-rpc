@@ -15,10 +15,10 @@ type ConnWorker struct {
 }
 
 var ConnPool = sync.Pool{New: func() interface{} {
-	return &ConnWorker{r: make([]byte, 256), w: make([]byte, 0, 256)}
+	return &ConnWorker{r: make([]byte, 255), w: make([]byte, 0, 255)}
 }}
 
-func OneCall(address string, action byte, param interface{}) (resp []byte) {
+func RemoteCall(address string, action byte, param interface{}) (resp []byte) {
 	worker := ConnPool.Get().(*ConnWorker)
 	defer ConnPool.Put(worker)
 
@@ -39,7 +39,6 @@ func OneCall(address string, action byte, param interface{}) (resp []byte) {
 		if err != nil {
 			log.Println(err)
 		}
-		w = make([]byte, 0, 256)
 		w = append(w, byte(len(js)), action)
 		w = append(w, js...)
 		conn.Write(w)
@@ -69,7 +68,7 @@ func OneCall(address string, action byte, param interface{}) (resp []byte) {
 
 func main() {
 	for i := 0; i < 50; i++ {
-		resp := OneCall("localhost:8080", 1, ActionParam1{3, 6})
+		resp := RemoteCall("localhost:8080", 1, ActionParam1{3, 6})
 		fmt.Println("返回值：", string(resp))
 	}
 }
